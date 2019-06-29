@@ -37,6 +37,7 @@ public class MazeMaker extends JPanel implements ActionListener {
     Dots playerDot;//the player piece
     Dots startDot;//the start location
     Dots finalDot;//the end location
+    boolean gameOver = false;//whether the game is over
  
     /**
      * Creates the maze generator and maze solver
@@ -74,8 +75,15 @@ public class MazeMaker extends JPanel implements ActionListener {
      */
     public void paintComponent(Graphics g) {
         super.paintComponent(g);//super it up to the component
+        if(!gameOver) {
         drawMaze(g);
         drawDots(g);
+        }
+        else {
+        	drawGameOver(g);
+        }
+        
+        Toolkit.getDefaultToolkit().sync();
     }
     
     public void drawMaze(Graphics g) {
@@ -116,6 +124,18 @@ public class MazeMaker extends JPanel implements ActionListener {
     	finalDot.drawDot(g);
     	
     }
+    
+    
+    private void drawGameOver(Graphics g) {
+		String msg = "Game Over. You solved the maze!";
+		Font small = new Font("Helvetica", Font.BOLD, 30);
+		FontMetrics fm = getFontMetrics(small);
+		
+		g.setColor(Color.black);
+		setBackground(Color.green);
+		g.setFont(small);
+		g.drawString(msg, 90, 350);
+	}
  
     /**
      * Generates a maze using the recursive backtracking algorithm
@@ -149,7 +169,30 @@ public class MazeMaker extends JPanel implements ActionListener {
     public void updateDots() {
     	playerDot.move();
     }
- 
+    
+    public void checkDotCollisions() {
+    	/*
+    	if(playerDot.getX() == finalDot.getX() && playerDot.getY() == finalDot.getY()) {
+    		gameOver = true;
+    	}
+    	*/
+    	
+    	
+    	
+    	Rectangle playerBounds = playerDot.getBounds();
+    	Rectangle finalBounds = finalDot.getBounds();
+    	if(playerBounds.intersects(finalBounds)) {
+    		gameOver = true;
+    	}
+    	
+    }
+    
+    
+    private void isGameOver() {
+		if(gameOver == true) {
+			timer.stop();
+		}
+	}
  
     /**
      * Main function to set up the board and maze
@@ -182,7 +225,9 @@ public class MazeMaker extends JPanel implements ActionListener {
 
 @Override
 public void actionPerformed(ActionEvent arg0) {
+	isGameOver();
 	updateDots();
+	checkDotCollisions();
 	repaint();
 	
 }

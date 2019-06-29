@@ -37,9 +37,8 @@ public class Dots extends JPanel{
 	}
 	
 	public void drawDot(Graphics g) {
-		Ellipse2D e = new Ellipse2D.Double(x, y, width, height);//create a 2d ellipse at the given coordinates
 		Graphics2D g2d = (Graphics2D) g;//cast the graphics into 2d graphics
-		
+		Ellipse2D e = new Ellipse2D.Double(x, y, width, height);//create a 2d ellipse at the given coordinates
 		RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);//RH makes graphics
 		//look better by enabling hints, turning antialias on makes things look more lifelike but code slower, antialias off is
 		//less lifelike but faster performance
@@ -52,6 +51,7 @@ public class Dots extends JPanel{
 		g2d.draw(e);
 		
 	}
+	
 	
 	public int getX() {
 		return x;
