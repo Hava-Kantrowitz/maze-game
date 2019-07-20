@@ -6,6 +6,12 @@ import javax.swing.*;
 import javax.swing.Timer;
  
 public class MazeMaker extends JPanel implements ActionListener {
+	
+	/**
+	 * Data type for the direction
+	 * @author havak
+	 *
+	 */
     enum Dir {
         N(1, 0, -1), S(2, 0, 1), E(4, 1, 0), W(8, -1, 0);//the directions
         final int bit;//given cell
@@ -27,6 +33,7 @@ public class MazeMaker extends JPanel implements ActionListener {
             this.dy = dy;//the movement in y
         }
     };
+    
     final int nCols;//number of columns in maze
     final int nRows;//number of rows in maze
     final int cellSize = 25;//pixel size of each cells
@@ -58,6 +65,9 @@ public class MazeMaker extends JPanel implements ActionListener {
 		timer.start();
     }
     
+    /**
+     * Initializes the dots on the board
+     */
     public void initDots() {
     	int offset = margin + cellSize / 2;//create the animation offset
         
@@ -86,6 +96,10 @@ public class MazeMaker extends JPanel implements ActionListener {
         Toolkit.getDefaultToolkit().sync();
     }
     
+    /**
+     * Draws the maze
+     * @param g the graphics input
+     */
     public void drawMaze(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;//make it a 2d drawing
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -115,17 +129,24 @@ public class MazeMaker extends JPanel implements ActionListener {
             }
         }
         
+        
  
     }
     
+    /**
+     * Draws the dots in the maze
+     * @param g the graphics input
+     */
     public void drawDots(Graphics g) {
     	startDot.drawDot(g);
     	playerDot.drawDot(g);
     	finalDot.drawDot(g);
-    	
     }
     
-    
+    /**
+     * Draws the game over screen
+     * @param g the graphics input
+     */
     private void drawGameOver(Graphics g) {
 		String msg = "Game Over. You solved the maze!";
 		Font small = new Font("Helvetica", Font.BOLD, 30);
@@ -166,18 +187,17 @@ public class MazeMaker extends JPanel implements ActionListener {
         return c >= 0 && c < nCols && r >= 0 && r < nRows;//returns true if it is within the rounds of the board, false otherwise
     }
     
+    /**
+     * Moves the player dot
+     */
     public void updateDots() {
     	playerDot.move();
     }
     
+    /**
+     * Determines if the player dot has collided with the final dot to end the game
+     */
     public void checkDotCollisions() {
-    	/*
-    	if(playerDot.getX() == finalDot.getX() && playerDot.getY() == finalDot.getY()) {
-    		gameOver = true;
-    	}
-    	*/
-    	
-    	
     	
     	Rectangle playerBounds = playerDot.getBounds();
     	Rectangle finalBounds = finalDot.getBounds();
@@ -187,7 +207,23 @@ public class MazeMaker extends JPanel implements ActionListener {
     	
     }
     
+    /**
+     * Determines if the player dot has collided with the wall
+     */
+    public void checkWallCollisions() {
+    	
+    	for (int row = 0; row < maze.length; row++) {
+    		for(int col = 0; col < maze.length; col++) {
+    			if(playerDot.getX() == row && playerDot.getY() == col) {
+    				playerDot.stopMotion();
+    			}
+    		}
+    	}
+    }
     
+    /**
+     * Determines whether the game has finished and responds to it
+     */
     private void isGameOver() {
 		if(gameOver == true) {
 			timer.stop();
@@ -210,7 +246,11 @@ public class MazeMaker extends JPanel implements ActionListener {
         });
     }
     
-  //listen for key events, which are delegated to ship class
+  /**
+   * Class to handle key events
+   * @author havak
+   *
+   */
   	private class TAdapter extends KeyAdapter{
   		@Override
   		public void keyReleased(KeyEvent e) {
@@ -224,11 +264,15 @@ public class MazeMaker extends JPanel implements ActionListener {
   	}
 
 @Override
+/**
+ * Actions to be performed every instance of the timer
+ */
 public void actionPerformed(ActionEvent arg0) {
-	isGameOver();
-	updateDots();
-	checkDotCollisions();
-	repaint();
+	isGameOver();//decide if game is over
+	updateDots();//if not, update dots
+	checkDotCollisions();//determine any collisions
+	checkWallCollisions();
+	repaint();//repaint
 	
 }
 
